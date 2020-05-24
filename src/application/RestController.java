@@ -227,7 +227,7 @@ public class RestController {
             return ErrorHandler.handleInternal(ev, req, res);
         } catch (ValidationError | SimpleError e) {
             return ErrorHandler.handleError(res, e);
-        } catch (javax.xml.bind.ValidationException e) {
+        } catch (Exception e) {
             return ErrorHandler.handleInternal(e, req, res);
         }
     }

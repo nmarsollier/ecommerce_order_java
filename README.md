@@ -46,9 +46,10 @@ Ver tutorial de instalación en [ecommerce](https://github.com/nmarsollier/ecomm
 
 ### Java
 
+Puede ser open jdk 11 o oracle 1.8+
 Java JDK 1.8  [oracle.com](http://www.oracle.com/technetwork/es/java/javase/downloads/index.html)
 
-Gradle [gradle.org](https://gradle.org/install/)
+Gradle [gradle.org](https://gradle.org/install/). 
 
 Establecer las variables de entorno sujeridas en las instalaciones.
 Tanto los ejecutables de java, como gradle deben poder encontrarse en el path.
@@ -91,3 +92,24 @@ Esto nos genera una carpeta www con la documentación, esta carpeta debe estar p
 ## Archivo config.json
 
 Este archivo permite configurar parámetros del servidor, ver ejemplos en config-example.json.
+
+
+## Docker
+
+Tambien podemos usar docker en este repositorio, ejecutamos :
+
+```bash
+docker build -t ecommerce-order-java .
+docker run -d --name ecommerce-order-java --network host ecommerce-order-java
+```
+
+El contenedor se puede parar usando :
+
+```bash
+docker stop ecommerce-order-java
+```
+Se vuelve a levantar usando 
+
+```bash
+docker start ecommerce-order-java
+```

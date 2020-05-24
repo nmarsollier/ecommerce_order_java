@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.xml.bind.ValidationException;
-
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.query.Query;
 
@@ -27,7 +25,7 @@ public class EventRepository {
         return instance;
     }
 
-    public Event save(Event event) throws ValidationException {
+    public Event save(Event event) {
         MongoStore.getEventStore().save(event);
         return event;
     }

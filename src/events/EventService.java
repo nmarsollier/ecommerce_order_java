@@ -3,8 +3,6 @@ package events;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.ValidationException;
-
 import events.schema.ArticleValidationEvent;
 import events.schema.Event;
 import events.schema.NewArticleValidationData;
@@ -25,7 +23,7 @@ public class EventService {
         return instance;
     }
 
-    public Event placeOrder(NewPlaceData data) throws ValidationException, ValidationError {
+    public Event placeOrder(NewPlaceData data) throws ValidationError {
         Validator.validate(data);
 
         EventRepository repository = EventRepository.getInstance();
@@ -46,7 +44,7 @@ public class EventService {
         return event;
     }
 
-    public Event placeArticleExist(NewArticleValidationData data) throws ValidationException, ValidationError {
+    public Event placeArticleExist(NewArticleValidationData data) throws ValidationError {
         Validator.validate(data);
 
         EventRepository repository = EventRepository.getInstance();
@@ -59,7 +57,7 @@ public class EventService {
         return event;
     }
 
-    public Event placePayment(PaymentData payment) throws ValidationException, ValidationError {
+    public Event placePayment(PaymentData payment) throws ValidationError {
         Validator.validate(payment);
 
         Event event = Event.newPayment(payment.orderId, payment.userId, payment.method, payment.amount);
