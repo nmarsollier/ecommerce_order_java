@@ -99,17 +99,17 @@ Este archivo permite configurar parámetros del servidor, ver ejemplos en config
 Tambien podemos usar docker en este repositorio, ejecutamos :
 
 ```bash
-docker build -t ecommerce-order-java .
-docker run -d --name ecommerce-order-java --network host ecommerce-order-java
+docker build -t dev-order-java .
+docker run -d --name dev-order-java --network host dev-order-java
 ```
 
 El contenedor se puede parar usando :
 
 ```bash
-docker stop ecommerce-order-java
+docker stop dev-order-java
 ```
 Se vuelve a levantar usando 
 
 ```bash
-docker start ecommerce-order-java
+docker start dev-order-java
 ```
