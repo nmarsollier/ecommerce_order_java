@@ -99,7 +99,7 @@ Este archivo permite configurar parámetros del servidor, ver ejemplos en config
 Tambien podemos usar docker en este repositorio, ejecutamos :
 
 ```bash
-docker build -t dev-order-java .
+docker build -t dev-order-java -f Dockerfile.dev .
 docker run -d --name dev-order-java --network host dev-order-java
 ```
 

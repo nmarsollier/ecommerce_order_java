@@ -1,0 +1,13 @@
+# Docker para desarrollo
+FROM gradle:6.4.1-jdk11
+
+COPY . /app
+
+WORKDIR /app
+
+RUN gradle build
+
+# Puerto de Order service
+EXPOSE 3004
+
+CMD ["gradle","run"]
