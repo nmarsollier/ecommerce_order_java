@@ -49,7 +49,7 @@ Ver tutorial de instalación en [ecommerce](https://github.com/nmarsollier/ecomm
 Puede ser open jdk 11 o oracle 1.8+
 Java JDK 1.8  [oracle.com](http://www.oracle.com/technetwork/es/java/javase/downloads/index.html)
 
-Gradle [gradle.org](https://gradle.org/install/). 
+Gradle [gradle.org](https://gradle.org/install/).
 
 Establecer las variables de entorno sujeridas en las instalaciones.
 Tanto los ejecutables de java, como gradle deben poder encontrarse en el path.
@@ -59,6 +59,7 @@ Tanto los ejecutables de java, como gradle deben poder encontrarse en el path.
 Se clona el repositorio en el directorio deseado.
 
 Nos paramos en la carpeta donde se encuentra el archivo build.gradle y ejecutamos :
+
 ```bash
 gradle run
 ```
@@ -89,18 +90,25 @@ apidoc-markdown2 -p www -o README-API.md
 
 Esto nos genera una carpeta www con la documentación, esta carpeta debe estar presente desde donde se ejecute el proyecto, aunque se puede configurar desde el archivo de properties.
 
-## Archivo config.json
+## Configuración del servidor
+
+Este servidor se configura con variables de entorno
+
+SERVER_PORT = Puerto del servidor (3004)
+AUTH_SERVICE_URL = Servidor Auth (http://localhost:3000)
+RABBIT_URL = Rabbit (localhost)
+MONGO_URL = Url de mongo (localhost)
+WWW_PATH = Path documentación (www)
 
 Este archivo permite configurar parámetros del servidor, ver ejemplos en config-example.json.
 
-
 ## Docker
 
-Tambien podemos usar docker en este repositorio, ejecutamos :
+También podemos usar docker en este repositorio, ejecutamos :
 
 ```bash
 docker build -t dev-order-java -f Dockerfile.dev .
-docker run -d --name dev-order-java --network host dev-order-java
+docker run -d --name dev-order-java -p 3004:3004 dev-order-java
 ```
 
 El contenedor se puede parar usando :
@@ -108,7 +116,8 @@ El contenedor se puede parar usando :
 ```bash
 docker stop dev-order-java
 ```
-Se vuelve a levantar usando 
+
+Se vuelve a levantar usando
 
 ```bash
 docker start dev-order-java
