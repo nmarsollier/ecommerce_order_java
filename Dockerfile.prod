@@ -7,8 +7,9 @@ ENV AUTH_SERVICE_URL http://host.docker.internal:3000
 
 WORKDIR /app
 RUN curl -L https://github.com/nmarsollier/ecommerce_order_java/tarball/master | tar xz --strip=1
+RUN gradle build fatJar
 
 # Puerto de Order Service
 EXPOSE 3004
 
-CMD ["gradle","run"]
+CMD java -jar ./build/libs/order_java-all.jar
