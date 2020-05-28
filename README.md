@@ -104,26 +104,18 @@ Este archivo permite configurar parámetros del servidor, ver ejemplos en config
 
 ## Docker
 
-También podemos usar docker en este repositorio, ejecutamos :
+### Build
 
 ```bash
-docker build -t dev-order-java -f Dockerfile.dev .
+docker build --no-cache -t dev-order-java .
+```
 
+### El contenedor
+
+```bash
 # Mac | Windows
-docker run -d --name dev-order-java -p 3004:3004 dev-order-java
+docker run -it --name dev-order-java -p 3004:3004 -v $PWD:/app dev-order-java
 
 # Linux
-docker run --add-host host.docker.internal:172.17.0.1 -d --name dev-order-java -p 3004:3004 dev-order-java
-```
-
-El contenedor se puede parar usando :
-
-```bash
-docker stop dev-order-java
-```
-
-Se vuelve a levantar usando
-
-```bash
-docker start dev-order-java
+docker run -it --add-host host.order.internal:172.17.0.1 --name dev-order-java -p 3004:3004 -v $PWD:/app dev-order-java
 ```

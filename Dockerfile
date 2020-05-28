@@ -5,13 +5,9 @@ ENV RABBIT_URL host.docker.internal
 ENV MONGO_URL host.docker.internal
 ENV AUTH_SERVICE_URL http://host.docker.internal:3000
 
-COPY . /app
-
 WORKDIR /app
-
-RUN gradle build
 
 # Puerto de Order service
 EXPOSE 3004
 
-CMD ["gradle","run"]
+CMD gradle run
