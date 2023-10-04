@@ -4,20 +4,19 @@ import com.order.events.schema.Event;
 import com.order.projections.common.Status;
 import com.order.projections.order.schema.Order;
 import com.order.projections.orderStatus.OrderStatusRepository;
-import org.bson.BsonType;
-import org.bson.codecs.pojo.annotations.BsonId;
-import org.bson.codecs.pojo.annotations.BsonRepresentation;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
 /**
  * Es el Agregado principal de Articulo.
  */
+@Document
 
 public final class OrderStatus {
-    @BsonId
-    @BsonRepresentation(BsonType.OBJECT_ID)
-    String id;
+    @Id
+    public String id;
 
     Status status;
 

@@ -1,9 +1,8 @@
 package com.order.utils.validator;
 
 import com.order.utils.errors.ValidationError;
+import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.logging.Level;
@@ -15,13 +14,8 @@ import java.util.logging.Logger;
  * <p>
  * Este método va a tirar una excepción si no valida.
  */
-@Singleton
+@Service
 public class Validator {
-
-    @Inject
-    public Validator() {
-
-    }
 
     public void validate(Object value) throws ValidationError {
         ValidationError errors = new ValidationError();

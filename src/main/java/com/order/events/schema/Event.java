@@ -1,17 +1,16 @@
 package com.order.events.schema;
 
-import org.bson.BsonType;
-import org.bson.codecs.pojo.annotations.BsonId;
-import org.bson.codecs.pojo.annotations.BsonRepresentation;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
 /**
  * Permite almacenar los eventos del event store.
  */
+@Document
 public class Event {
-    @BsonId
-    @BsonRepresentation(BsonType.OBJECT_ID)
+    @Id
     private String id;
 
     private String orderId;

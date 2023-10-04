@@ -1,10 +1,11 @@
 package com.order.utils.rabbit;
 
-import com.order.utils.server.Environment;
+import com.order.utils.server.Env;
 import com.order.utils.validator.Validator;
 import com.rabbitmq.client.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -13,24 +14,18 @@ import java.util.logging.Logger;
 /**
  * Las colas fanout son un broadcast, no necesitan queue, solo exchange que es donde se publican
  */
+@Service
 public class FanoutConsumer {
 
-    final Environment environment;
+    @Autowired
+    Env env;
 
-    final Validator validator;
+    @Autowired
+    Validator validator;
 
     private String exchange;
 
     private final Map<String, EventProcessor> listeners = new HashMap<>();
-
-    @Inject
-    public FanoutConsumer(
-            Environment environment,
-            Validator validator
-    ) {
-        this.environment = environment;
-        this.validator = validator;
-    }
 
     public void init(String exchange) {
         this.exchange = exchange;
@@ -58,7 +53,7 @@ public class FanoutConsumer {
     public void start() {
         try {
             ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost(environment.rabbitServerUrl());
+            factory.setHost(env.rabbitServerUrl());
             Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();
 

@@ -3,19 +3,15 @@ package com.order.projections.order;
 import com.order.events.EventRepository;
 import com.order.events.schema.Event;
 import com.order.projections.order.schema.Order;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.List;
 
-@Singleton
+@Service
 public class OrderService {
-    final EventRepository eventRepository;
-
-    @Inject
-    public OrderService(EventRepository eventRepository) {
-        this.eventRepository = eventRepository;
-    }
+    @Autowired
+    EventRepository eventRepository;
 
     // Se elimina y regenera la proyección a partir de los eventos.
     public Order buildOrder(String orderId) {

@@ -1,10 +1,11 @@
 package com.order.utils.rabbit;
 
-import com.order.utils.server.Environment;
+import com.order.utils.server.Env;
 import com.order.utils.validator.Validator;
 import com.rabbitmq.client.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -15,24 +16,18 @@ import java.util.logging.Logger;
  * Necesitamos un exchange y un queue especifico para enviar correctamente el mensaje.
  * Tanto el consumer como el publisher deben compartir estos mismos datos.
  */
+@Service
 public class DirectConsumer {
 
-    final Environment environment;
+    @Autowired
+    Env env;
 
-    final Validator validator;
+    @Autowired
+    Validator validator;
 
     private String exchange;
     private String queue;
     private final Map<String, EventProcessor> listeners = new HashMap<>();
-
-    @Inject
-    public DirectConsumer(
-            Environment environment,
-            Validator validator
-    ) {
-        this.environment = environment;
-        this.validator = validator;
-    }
 
     public void init(String exchange, String queue) {
         this.exchange = exchange;
@@ -61,7 +56,7 @@ public class DirectConsumer {
     public void start() {
         try {
             ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost(environment.rabbitServerUrl());
+            factory.setHost(env.rabbitServerUrl());
             Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();
 

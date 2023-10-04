@@ -3,27 +3,22 @@ package com.order.projections.orderStatus;
 import com.order.events.EventRepository;
 import com.order.events.schema.Event;
 import com.order.projections.orderStatus.schema.OrderStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.util.List;
 
+@Service
 public class OrderStatusService {
-    final OrderStatusRepository orderStatusRepository;
+    @Autowired
+    OrderStatusRepository orderStatusRepository;
 
-    final EventRepository eventRepository;
-
-    @Inject
-    public OrderStatusService(
-            OrderStatusRepository orderStatusRepository,
-            EventRepository eventRepository
-    ) {
-        this.orderStatusRepository = orderStatusRepository;
-        this.eventRepository = eventRepository;
-    }
+    @Autowired
+    EventRepository eventRepository;
 
     // Actualiza la proyección Order
     public void update(Event event) {
-        OrderStatus order = orderStatusRepository.findById(event.getOrderId());
+        OrderStatus order = orderStatusRepository.findById(event.getOrderId()).orElse(null);
         if (order == null) {
             order = new OrderStatus();
         }
@@ -32,7 +27,7 @@ public class OrderStatusService {
     }
 
     public OrderStatus findById(String orderId) {
-        OrderStatus order = orderStatusRepository.findById(orderId);
+        OrderStatus order = orderStatusRepository.findById(orderId).orElse(null);
         if (order == null) {
             order = rebuildOrderStatus(orderId);
         }
@@ -46,7 +41,7 @@ public class OrderStatusService {
             return null;
         }
 
-        orderStatusRepository.delete(orderId);
+        orderStatusRepository.deleteById(orderId);
         OrderStatus order = new OrderStatus();
         events.forEach(ev -> {
             order.update(ev);

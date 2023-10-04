@@ -1,40 +1,23 @@
 package com.order;
 
 import com.order.rabbit.RabbitController;
-import com.order.rest.Routes;
-import com.order.utils.server.Environment;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import javax.inject.Inject;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+@SpringBootApplication
 public class Server {
-    final Environment environment;
+    @Autowired
+    RabbitController rabbitController;
 
-    final Routes routes;
-
-    final RabbitController rabbitController;
-
-    @Inject
-    public Server(
-            Environment environment,
-            Routes routes,
-            RabbitController rabbitController
-    ) {
-        this.environment = environment;
-        this.routes = routes;
-        this.rabbitController = rabbitController;
-    }
 
     public static void main(String[] args) {
-        DaggerServerComponent.builder().build().getServer().start();
+        SpringApplication.run(Server.class, args);
     }
 
-    void start() {
-        routes.init();
+    @PostConstruct
+    void init() {
         rabbitController.init();
-
-        Logger.getLogger("Validator").log(Level.INFO,
-                "Order Service escuchando en el puerto : " + environment.serverPort());
     }
 }

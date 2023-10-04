@@ -1,10 +1,11 @@
 package com.order.utils.rabbit;
 
-import com.order.utils.server.Environment;
+import com.order.utils.server.Env;
 import com.order.utils.validator.Validator;
 import com.rabbitmq.client.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -17,25 +18,19 @@ import java.util.logging.Logger;
  * queue permite distribuir la carga de los mensajes entre distintos consumers, los consumers con el mismo queue name
  * comparten la carga de procesamiento de mensajes, es importante que se defina el queue
  */
+@Service
 public class TopicConsumer {
 
-    final Environment environment;
+    @Autowired
+    Env env;
 
-    final Validator validator;
+    @Autowired
+    Validator validator;
 
     private String exchange;
     private String queue;
     private String topic;
     private final Map<String, EventProcessor> listeners = new HashMap<>();
-
-    @Inject
-    public TopicConsumer(
-            Environment environment,
-            Validator validator
-    ) {
-        this.environment = environment;
-        this.validator = validator;
-    }
 
     public void init(String exchange, String queue, String topic) {
         this.exchange = exchange;
@@ -65,7 +60,7 @@ public class TopicConsumer {
     public void start() {
         try {
             ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost(environment.rabbitServerUrl());
+            factory.setHost(env.rabbitServerUrl());
             Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();
 

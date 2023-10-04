@@ -1,59 +1,25 @@
 package com.order.events;
 
-import com.google.common.collect.Streams;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Sorts;
 import com.order.events.schema.Event;
-import com.order.events.schema.EventType;
-import com.order.utils.db.MongoStore;
+import org.springframework.data.mongodb.repository.Aggregation;
+import org.springframework.data.mongodb.repository.Query;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.List;
 
-@Singleton
-public class EventRepository {
-    final MongoStore mongoStore;
+@Repository
+public interface EventRepository extends CrudRepository<Event, String> {
 
-    private MongoCollection<Event> collection;
+    @Query("{ $and [{'placeEvent.cartId': ?0}, {'type': 'PLACE_ORDER'}] }")
+    List<Event> findPlaceByCartId(String cartId);
 
-    @Inject
-    public EventRepository(MongoStore mongoStore) {
-        this.mongoStore = mongoStore;
-        collection = mongoStore.getEventCollection();
-    }
+    @Query("{ $and [{'orderId': ?0}, {'type': 'PLACE_ORDER'}] }")
+    List<Event> findPlaceByOrderId(String orderId);
 
-    public void save(Event event) {
-        collection.insertOne(event).getInsertedId();
-    }
-
-    public Event findPlaceByCartId(String cartId) {
-        return collection.find(
-                Filters.and(
-                        Filters.eq("placeEvent.cartId", cartId),
-                        Filters.eq("type", EventType.PLACE_ORDER)
-                )
-        ).first();
-    }
-
-
-    public Event findPlaceByOrderId(String orderId) {
-        return collection.find(
-                Filters.and(
-                        Filters.eq("orderId", orderId),
-                        Filters.eq("type", EventType.PLACE_ORDER)
-                )
-        ).first();
-    }
-
-    public List<Event> findByOrderId(String orderId) {
-        return Streams.stream(collection
-                .find(
-                        Filters.eq("orderId", orderId)
-                )
-                .sort(Sorts.ascending("created"))
-                .iterator()
-        ).toList();
-    }
+    @Aggregation(pipeline = {
+            "{$match: { $or [{'orderId': $0}, {'_id': $0}] }",
+            "{$sort: {created: 1}}"
+    })
+    List<Event> findByOrderId(String orderId);
 }

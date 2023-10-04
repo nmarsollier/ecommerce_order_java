@@ -1,12 +1,12 @@
 package com.order.utils.rabbit;
 
-import com.order.utils.server.Environment;
+import com.order.utils.server.Env;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,21 +17,16 @@ import java.util.logging.Logger;
  * queue permite distribuir la carga de los mensajes entre distintos consumers, los consumers con el mismo queue name
  * comparten la carga de procesamiento de mensajes, es importante que se defina el queue
  */
-@Singleton
+@Service
 public class TopicPublisher {
 
-    final Environment environment;
-
-    @Inject
-    public TopicPublisher(Environment environment) {
-        this.environment = environment;
-    }
-
+    @Autowired
+    Env env;
 
     public void publish(String exchange, String topic, RabbitEvent message) {
         try {
             ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost(environment.rabbitServerUrl());
+            factory.setHost(env.rabbitServerUrl());
             Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();
 

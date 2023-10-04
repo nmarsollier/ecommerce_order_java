@@ -2,20 +2,13 @@ package com.order.projections;
 
 import com.order.events.schema.Event;
 import com.order.projections.orderStatus.OrderStatusService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-@Singleton
+@Service
 public class ProjectionService {
-    final OrderStatusService orderStatusService;
-
-    @Inject
-    public ProjectionService(
-            OrderStatusService orderStatusService
-    ) {
-        this.orderStatusService = orderStatusService;
-    }
+    @Autowired
+    OrderStatusService orderStatusService;
 
     public void updateProjections(Event event) {
         new Thread(() -> orderStatusService.update(event)).start();

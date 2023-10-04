@@ -1,12 +1,12 @@
 package com.order.utils.rabbit;
 
-import com.order.utils.server.Environment;
+import com.order.utils.server.Env;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,21 +15,16 @@ import java.util.logging.Logger;
  * Necesitamos un exchange y un queue especifico para enviar correctamente el mensaje.
  * Tanto el consumer como el publisher deben compartir estos mismos datos.
  */
-@Singleton
+@Service
 public class DirectPublisher {
 
-    final Environment environment;
-
-    @Inject
-    public DirectPublisher(Environment environment) {
-        this.environment = environment;
-    }
-
+    @Autowired
+    Env env;
 
     public void publish(String exchange, String queue, RabbitEvent message) {
         try {
             ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost(environment.rabbitServerUrl());
+            factory.setHost(env.rabbitServerUrl());
             Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();
 

@@ -8,32 +8,26 @@ import com.order.projections.order.OrderService;
 import com.order.projections.order.schema.Order;
 import com.order.projections.orderStatus.OrderStatusRepository;
 import com.order.rabbit.RabbitController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@Service
 public class BatchService {
-    final OrderService orderService;
+    @Autowired
+    OrderService orderService;
 
-    final OrderStatusRepository statusRepository;
+    @Autowired
+    OrderStatusRepository statusRepository;
 
-    final EventRepository eventRepository;
+    @Autowired
+    EventRepository eventRepository;
 
-    final RabbitController rabbitController;
+    @Autowired
+    RabbitController rabbitController;
 
-    @Inject
-    public BatchService(
-            OrderService orderService,
-            OrderStatusRepository statusRepository,
-            EventRepository eventRepository,
-            RabbitController rabbitController
-    ) {
-        this.orderService = orderService;
-        this.statusRepository = statusRepository;
-        this.eventRepository = eventRepository;
-        this.rabbitController = rabbitController;
-    }
 
     private final AtomicBoolean placeOrdersRunning = new AtomicBoolean();
     private final AtomicBoolean validatedOrdersRunning = new AtomicBoolean();
@@ -99,7 +93,7 @@ public class BatchService {
     }
 
     private void validateOrder(String orderId) {
-        Event event = eventRepository.findPlaceByOrderId(orderId);
+        Event event = eventRepository.findPlaceByOrderId(orderId).stream().findFirst().orElse(null);
         if (event != null) {
             /**
              * Busca todos los artículos de un evento, los envía a rabbit para que catalog valide si están activos

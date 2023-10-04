@@ -4,11 +4,12 @@ import com.order.rabbit.EventService;
 import com.order.rabbit.PaymentData;
 import com.order.rest.tools.Validations;
 import com.order.security.User;
-import com.order.utils.gson.Builder;
-import io.javalin.Javalin;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import com.order.utils.errors.SimpleError;
+import com.order.utils.errors.ValidationError;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @api {post} /v1/orders/:orderId/payment Agregar Pago
@@ -24,37 +25,33 @@ import javax.inject.Singleton;
  * HTTP/1.1 200 OK
  * @apiUse Errors
  */
-@Singleton
+@CrossOrigin
+@RestController
 public class PostOrdersIdPayment {
-    final Validations validations;
+    @Autowired
+    Validations validations;
 
-    final EventService service;
+    @Autowired
+    EventService service;
 
-    @Inject
-    public PostOrdersIdPayment(
-            Validations validations,
-            EventService service
-    ) {
-        this.validations = validations;
-        this.service = service;
-    }
+    @PostMapping(
+            value = "/v1/orders/{orderId}/payment",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public void postOrdersIdPayment(
+            @PathVariable("orderId") String orderId,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String auth,
+            @RequestBody PaymentData payment
+    ) throws SimpleError, ValidationError {
+        validations.validateUser(auth);
+        validations.validateOrderId(orderId);
 
-    public void init(Javalin app) {
-        app.post(
-                "/v1/orders/{orderId}/payment",
-                ctx -> {
-                    validations.validateUser(ctx);
-                    validations.validateOrderId(ctx);
+        User user = validations.currentUser(auth);
 
-                    String orderId = ctx.pathParam("orderId");
-                    User user = validations.currentUser(ctx);
+        payment.orderId = orderId;
+        payment.userId = user.id;
 
-                    PaymentData payment = Builder.gson().fromJson(ctx.body(), PaymentData.class);
-                    payment.orderId = orderId;
-                    payment.userId = user.id;
-
-                    service.placePayment(payment);
-                });
+        service.placePayment(payment);
     }
 }
 

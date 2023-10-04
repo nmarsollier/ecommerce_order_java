@@ -5,46 +5,36 @@ import com.order.events.schema.Event;
 import com.order.events.schema.PlaceEvent;
 import com.order.security.TokenService;
 import com.order.utils.rabbit.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-@Singleton
+@Service
 public class RabbitController {
-    final TokenService tokenService;
+    @Autowired
+    TokenService tokenService;
 
-    final FanoutConsumer fanoutConsumer;
+    @Autowired
+    FanoutConsumer fanoutConsumer;
 
-    final DirectConsumer directConsumer;
+    @Autowired
+    DirectConsumer directConsumer;
 
-    final TopicPublisher topicPublisher;
+    @Autowired
+    TopicPublisher topicPublisher;
 
-    final DirectPublisher directPublisher;
+    @Autowired
+    DirectPublisher directPublisher;
 
-    final EventService eventService;
+    @Autowired
+    EventService eventService;
 
     public static final Logger logger = Logger.getLogger("rabbit");
 
-    @Inject
-    public RabbitController(
-            TokenService tokenService,
-            FanoutConsumer fanoutConsumer,
-            DirectConsumer directConsumer,
-            TopicPublisher topicPublisher,
-            DirectPublisher directPublisher,
-            EventService eventService
-    ) {
-        this.tokenService = tokenService;
-        this.fanoutConsumer = fanoutConsumer;
-        this.directConsumer = directConsumer;
-        this.topicPublisher = topicPublisher;
-        this.directPublisher = directPublisher;
-        this.eventService = eventService;
-    }
 
     public void init() {
         fanoutConsumer.init("auth");

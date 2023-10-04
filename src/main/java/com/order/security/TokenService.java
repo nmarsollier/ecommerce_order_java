@@ -2,16 +2,15 @@ package com.order.security;
 
 import com.order.utils.errors.SimpleError;
 import com.order.utils.language.ExpiringMap;
-import com.order.utils.server.Environment;
+import com.order.utils.server.Env;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * @apiDefine AuthHeader
@@ -20,17 +19,12 @@ import javax.inject.Singleton;
  * @apiErrorExample 401 Unauthorized
  * HTTP/1.1 401 Unauthorized
  */
-@Singleton
+@Service
 public class TokenService {
     final ExpiringMap<String, User> map = new ExpiringMap<>(60 * 60, 60 * 5);
 
-    final Environment environment;
-
-    @Inject
-    public TokenService(Environment environment) {
-        this.environment = environment;
-    }
-
+    @Autowired
+    Env env;
 
     public void validateAdmin(String token) throws SimpleError {
         validate(token);
@@ -85,7 +79,7 @@ public class TokenService {
 
     private User retrieveUser(String token) {
         HttpClient client = HttpClientBuilder.create().build();
-        HttpGet request = new HttpGet(environment.securityServerUrl() + "/v1/users/current");
+        HttpGet request = new HttpGet(env.securityServerUrl() + "/v1/users/current");
         request.addHeader("Authorization", token);
         HttpResponse response;
         try {

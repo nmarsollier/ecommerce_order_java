@@ -2,13 +2,17 @@ package com.order.rest;
 
 
 import com.order.projections.orderStatus.OrderStatusRepository;
-import com.order.projections.orderStatus.schema.OrderStatus;
 import com.order.rest.dto.OrderListData;
 import com.order.rest.tools.Validations;
-import io.javalin.Javalin;
+import com.order.utils.errors.SimpleError;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.List;
 
 /**
@@ -31,31 +35,27 @@ import java.util.List;
  * ]
  * @apiUse Errors
  */
-@Singleton
+@CrossOrigin
+@RestController
 public class GetOrders {
-    final OrderStatusRepository repository;
+    @Autowired
+    OrderStatusRepository repository;
 
-    final Validations validations;
+    @Autowired
+    Validations validations;
 
-    @Inject
-    public GetOrders(
-            OrderStatusRepository repository,
-
-            Validations validations
-    ) {
-        this.repository = repository;
-        this.validations = validations;
-    }
-
-    public void init(Javalin app) {
-        app.get(
-                "/v1/orders",
-                ctx -> {
-                    validations.validateUser(ctx);
-                    List<OrderStatus> orders = repository.findByUserId(validations.currentUser(ctx).id);
-
-                    ctx.json(orders.stream().map(OrderListData::new));
-                });
+    @GetMapping(
+            value = "/v1/orders",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public List<OrderListData> getOrders(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String auth
+    ) throws SimpleError {
+        validations.validateUser(auth);
+        return repository
+                .findByUserId(validations.currentUser(auth).id)
+                .stream()
+                .map(OrderListData::new)
+                .toList();
     }
 }
-
