@@ -2,13 +2,13 @@ package com.order.batch;
 
 import com.order.events.EventRepository;
 import com.order.events.schema.Event;
-import com.order.events.schema.EventType;
 import com.order.projections.common.Status;
 import com.order.projections.order.OrderService;
 import com.order.projections.order.schema.Order;
 import com.order.projections.orderStatus.OrderStatusRepository;
-import com.order.rabbit.RabbitController;
+import com.order.rabbit.EmitArticleValidation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -26,7 +26,7 @@ public class BatchService {
     EventRepository eventRepository;
 
     @Autowired
-    RabbitController rabbitController;
+    EmitArticleValidation rabbitController;
 
 
     private final AtomicBoolean placeOrdersRunning = new AtomicBoolean();
@@ -39,7 +39,7 @@ public class BatchService {
             }
 
             statusRepository
-                    .findByStatus(Status.PLACED)
+                    .findByStatus(Status.PLACED, Sort.by(Sort.Direction.ASC, "created"))
                     .forEach(stat -> {
                         Order order = orderService.buildOrder(stat.getId());
 
@@ -48,7 +48,8 @@ public class BatchService {
                             validateOrder(order.getId());
                         } else {
                             // En este caso OrderStatus esta desactualizado
-                            stat.update(order).storeIn(statusRepository);
+                            stat.update(order.getStatus(), order.getTotalPrice())
+                                    .storeIn(statusRepository);
                         }
                     });
 
@@ -62,9 +63,10 @@ public class BatchService {
                 return;
             }
 
-            statusRepository.findByStatus(Status.VALIDATED)
+            statusRepository.findByStatus(Status.VALIDATED, Sort.by(Sort.Direction.ASC, "created"))
                     .forEach(stat -> {
-                        stat.update(orderService.buildOrder(stat.getId()))
+                        Order order = orderService.buildOrder(stat.getId());
+                        stat.update(order.getStatus(), order.getTotalPrice())
                                 .storeIn(statusRepository);
                     });
 
@@ -78,14 +80,9 @@ public class BatchService {
                 return;
             }
 
-            statusRepository.findByStatus(Status.PAYMENT_DEFINED).forEach(stat -> {
+            statusRepository.findByStatus(Status.PAYMENT_DEFINED, Sort.by(Sort.Direction.ASC, "created")).forEach(stat -> {
                 Order order = orderService.buildOrder(stat.getId());
-                stat.update(order).storeIn(statusRepository);
-
-                if (order.getStatus() == Status.PAYMENT_DEFINED) {
-                    // A reservar artículos
-
-                }
+                stat.update(order.getStatus(), order.getTotalPrice()).storeIn(statusRepository);
             });
 
             validatedOrdersRunning.set(false);
@@ -94,18 +91,21 @@ public class BatchService {
 
     private void validateOrder(String orderId) {
         Event event = eventRepository.findPlaceByOrderId(orderId).stream().findFirst().orElse(null);
-        if (event != null) {
-            /**
-             * Busca todos los artículos de un evento, los envía a rabbit para que catalog valide si están activos
-             */
-            new Thread(() -> {
-                if (event.getType() == EventType.PLACE_ORDER) {
-                    Arrays.stream(event.placeEvent().getArticles()) //
-                            .forEach(a -> {
-                                rabbitController.sendArticleValidation(event.getOrderId(), a.getArticleId());
-                            });
-                }
-            }).start();
+        if (event == null) {
+            return;
         }
+
+        /**
+         * Busca todos los artículos de un evento, los envía a rabbit para que catalog valide si están activos
+         */
+        new Thread(() -> {
+            Arrays.stream(event.placeEvent().getArticles()) //
+                    .forEach(a -> {
+                        rabbitController.sendArticleValidation(
+                                event.getOrderId() == null ? event.getId() : event.getOrderId(),
+                                a.getArticleId()
+                        );
+                    });
+        }).start();
     }
 }

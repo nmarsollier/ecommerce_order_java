@@ -2,7 +2,6 @@ package com.order.projections.orderStatus.schema;
 
 import com.order.events.schema.Event;
 import com.order.projections.common.Status;
-import com.order.projections.order.schema.Order;
 import com.order.projections.orderStatus.OrderStatusRepository;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -19,18 +18,13 @@ public final class OrderStatus {
     public String id;
 
     Status status;
-
     String userId;
-
     String cartId;
     int articles;
-
     double payment;
-
     double totalPrice;
-
     Date updated = new Date();
-    final Date created = new Date();
+    Date created = new Date();
 
     public OrderStatus() {
     }
@@ -40,9 +34,9 @@ public final class OrderStatus {
         return this;
     }
 
-    public OrderStatus update(Order order) {
-        status = order.getStatus();
-        totalPrice = order.getTotalPrice();
+    public OrderStatus update(Status status, double totalPrice) {
+        this.status = status;
+        this.totalPrice = totalPrice;
         return this;
     }
 

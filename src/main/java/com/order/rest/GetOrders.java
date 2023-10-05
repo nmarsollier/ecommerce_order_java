@@ -3,9 +3,9 @@ package com.order.rest;
 
 import com.order.projections.orderStatus.OrderStatusRepository;
 import com.order.rest.dto.OrderListData;
-import com.order.rest.tools.Validations;
 import com.order.utils.errors.SimpleError;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -53,7 +53,7 @@ public class GetOrders {
     ) throws SimpleError {
         validations.validateUser(auth);
         return repository
-                .findByUserId(validations.currentUser(auth).id)
+                .findByUserId(validations.currentUser(auth).id, Sort.by(Sort.Direction.ASC, "created"))
                 .stream()
                 .map(OrderListData::new)
                 .toList();

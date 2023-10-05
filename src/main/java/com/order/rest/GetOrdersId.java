@@ -2,7 +2,6 @@ package com.order.rest;
 
 import com.order.projections.order.OrderService;
 import com.order.projections.order.schema.Order;
-import com.order.rest.tools.Validations;
 import com.order.utils.errors.SimpleError;
 import com.order.utils.errors.UnauthorizedError;
 import com.order.utils.errors.ValidationError;

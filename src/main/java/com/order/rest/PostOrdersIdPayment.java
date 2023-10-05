@@ -1,8 +1,7 @@
 package com.order.rest;
 
-import com.order.rabbit.EventService;
-import com.order.rabbit.PaymentData;
-import com.order.rest.tools.Validations;
+import com.order.events.EventService;
+import com.order.rabbit.dto.PaymentData;
 import com.order.security.User;
 import com.order.utils.errors.SimpleError;
 import com.order.utils.errors.ValidationError;

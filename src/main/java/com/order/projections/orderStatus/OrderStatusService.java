@@ -18,20 +18,15 @@ public class OrderStatusService {
 
     // Actualiza la proyección Order
     public void update(Event event) {
-        OrderStatus order = orderStatusRepository.findById(event.getOrderId()).orElse(null);
-        if (order == null) {
-            order = new OrderStatus();
-        }
-        order.update(event);
-        orderStatusRepository.save(order);
+        orderStatusRepository
+                .findById(event.getOrderId() == null ? event.getId() : event.getOrderId())
+                .orElse(new OrderStatus())
+                .update(event)
+                .storeIn(orderStatusRepository);
     }
 
     public OrderStatus findById(String orderId) {
-        OrderStatus order = orderStatusRepository.findById(orderId).orElse(null);
-        if (order == null) {
-            order = rebuildOrderStatus(orderId);
-        }
-        return order;
+        return orderStatusRepository.findById(orderId).orElse(rebuildOrderStatus(orderId));
     }
 
     // Se elimina y regenera la proyección a partir de los eventos.
@@ -43,11 +38,7 @@ public class OrderStatusService {
 
         orderStatusRepository.deleteById(orderId);
         OrderStatus order = new OrderStatus();
-        events.forEach(ev -> {
-            order.update(ev);
-        });
-        orderStatusRepository.save(order);
-        return order;
+        events.forEach(order::update);
+        return order.storeIn(orderStatusRepository);
     }
-
 }

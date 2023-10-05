@@ -1,10 +1,10 @@
 package com.order.utils.rabbit;
 
-import com.order.utils.server.Env;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.util.logging.Level;
@@ -19,12 +19,12 @@ import java.util.logging.Logger;
 public class DirectPublisher {
 
     @Autowired
-    Env env;
+    Environment env;
 
     public void publish(String exchange, String queue, RabbitEvent message) {
         try {
             ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost(env.rabbitServerUrl());
+            factory.setHost(env.getProperty("rabbit.rabbitServerUrl"));
             Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();
 

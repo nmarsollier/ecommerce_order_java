@@ -16,13 +16,10 @@ public class OrderService {
     // Se elimina y regenera la proyección a partir de los eventos.
     public Order buildOrder(String orderId) {
         List<Event> events = eventRepository.findByOrderId(orderId);
-        if (events.isEmpty()) {
-            return null;
-        }
+        if (events.isEmpty()) return null;
 
         Order order = new Order();
         events.forEach(order::update);
         return order;
     }
-
 }

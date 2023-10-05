@@ -1,7 +1,6 @@
-package com.order.rabbit;
+package com.order.rabbit.dto;
 
 import com.google.gson.annotations.SerializedName;
-
 import com.order.events.schema.PaymentEvent;
 import com.order.utils.gson.Builder;
 import com.order.utils.validator.MinLen;
@@ -28,5 +27,9 @@ public class PaymentData {
 
     public static PaymentData fromJson(String json) {
         return Builder.gson().fromJson(json, PaymentData.class);
+    }
+
+    public PaymentEvent toPaymentEvent() {
+        return new PaymentEvent(this.userId, this.method, this.amount);
     }
 }

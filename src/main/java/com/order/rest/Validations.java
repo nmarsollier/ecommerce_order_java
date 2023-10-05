@@ -1,4 +1,4 @@
-package com.order.rest.tools;
+package com.order.rest;
 
 import com.order.security.TokenService;
 import com.order.security.User;

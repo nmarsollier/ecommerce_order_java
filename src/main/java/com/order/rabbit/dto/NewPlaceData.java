@@ -1,13 +1,11 @@
-package com.order.rabbit;
+package com.order.rabbit.dto;
 
 import com.google.gson.annotations.SerializedName;
-
+import com.order.events.schema.PlaceEvent;
 import com.order.utils.gson.Builder;
-import com.order.utils.validator.MinLen;
-import com.order.utils.validator.MinValue;
-import com.order.utils.validator.NotEmpty;
-import com.order.utils.validator.Required;
-import com.order.utils.validator.Validate;
+import com.order.utils.validator.*;
+
+import java.util.Arrays;
 
 public class NewPlaceData {
     @SerializedName("cartId")
@@ -40,5 +38,14 @@ public class NewPlaceData {
 
     public static NewPlaceData fromJson(String json) {
         return Builder.gson().fromJson(json, NewPlaceData.class);
+    }
+
+    public PlaceEvent toPlaceEvent() {
+        PlaceEvent.Article[] articles = Arrays.stream(this.articles) //
+                .map(a -> new PlaceEvent.Article(a.id, a.quantity)) //
+                .toList() //
+                .toArray(new PlaceEvent.Article[]{});
+
+        return new PlaceEvent(this.cartId, this.userId, articles);
     }
 }

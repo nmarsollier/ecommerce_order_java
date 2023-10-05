@@ -1,5 +1,7 @@
 package com.order.events.schema;
 
+import com.order.events.EventRepository;
+import com.order.projections.ProjectionService;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -23,7 +25,7 @@ public class Event {
 
     private PaymentEvent payment;
 
-    private final Date created = new Date();
+    private Date created = new Date();
 
     private Event() {
     }
@@ -66,15 +68,27 @@ public class Event {
 
     public static Event newArticleValidation(String orderId, ArticleValidationEvent validationEvent) {
         Event result = new Event();
+        result.orderId = orderId;
         result.type = EventType.ARTICLE_VALIDATION;
         result.articleValidationEvent = validationEvent;
         return result;
     }
 
-    public static Event newPayment(String orderId, String userId, PaymentEvent.Method method, double amount) {
+    public static Event newPayment(String orderId, PaymentEvent payment) {
         Event result = new Event();
+        result.orderId = orderId;
         result.type = EventType.PAYMENT;
-        result.payment = new PaymentEvent(userId, method, amount);
+        result.payment = payment;
         return result;
+    }
+
+    public Event saveIn(EventRepository repository) {
+        repository.save(this);
+        return this;
+    }
+
+    public Event updateProjection(ProjectionService projectionService) {
+        projectionService.updateProjections(this);
+        return this;
     }
 }

@@ -1,7 +1,6 @@
 package com.order.rest;
 
 import com.order.batch.BatchService;
-import com.order.rest.tools.Validations;
 import com.order.utils.errors.SimpleError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
