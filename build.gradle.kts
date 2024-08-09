@@ -22,9 +22,15 @@ application {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(19)) // Set to the desired Java version
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
+tasks.withType<JavaCompile>().configureEach {
+    sourceCompatibility = JavaVersion.VERSION_19.toString() 
+    targetCompatibility = JavaVersion.VERSION_19.toString() 
+    options.release.set(19) 
+}
+
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
